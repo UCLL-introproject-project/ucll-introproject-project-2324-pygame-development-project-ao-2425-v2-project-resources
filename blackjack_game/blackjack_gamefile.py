@@ -20,6 +20,19 @@ fps = 60
 timer = pygame.time.Clock()
 pygame.font.init()
 font = pygame.font.Font(None, 36)
+active = False
+
+#draw game conditions and buttons
+def draw_game(act):
+    button_list = []
+    #initially on startup (not active) only option is to deal new hand
+    if not act:
+        deal = pygame.draw.rect(screen, 'white', [150, 20, 300, 100], 0, 5)
+        pygame.draw.rect(screen, 'green', [150, 20, 300, 100], 3, 5)
+        deal_text = font.render('DEAL HAND', True, 'black')
+        screen.blit(deal_text, (165, 50))
+        button_list.append(deal)
+
 
 
 #main game loop
@@ -28,6 +41,7 @@ while run:
     # run game at our framerate and fill screen with bg color
     timer.tick(fps)
     screen.fill('black')
+    buttons = draw_game(active)
 
     #event handling, if quit pressed, then exit game
     for event in pygame.event.get():
