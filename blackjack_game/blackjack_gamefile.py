@@ -20,7 +20,7 @@ fps = 60
 timer = pygame.time.Clock()
 pygame.font.init()
 font = pygame.font.Font(None, 36)
-active = False
+active = True
 
 #draw game conditions and buttons
 def draw_game(act):
@@ -32,7 +32,20 @@ def draw_game(act):
         deal_text = font.render('DEAL HAND', True, 'black')
         screen.blit(deal_text, (165, 50))
         button_list.append(deal)
+        
+    #once game started, show hit and stand buttons and win/loss records
+    else:
+        hit = pygame.draw.rect(screen, 'white', [0, 700, 300, 100], 0, 5)
+        pygame.draw.rect(screen, 'green', [0, 700, 300, 100], 3, 5)
+        hit_text = font.render('HIT ME', True, 'black')
+        screen.blit(hit_text, (55, 735))
+        button_list.append(hit)
 
+        stand = pygame.draw.rect(screen, 'white', [300, 700, 300, 100], 0, 5)
+        pygame.draw.rect(screen, 'green', [300, 700, 300, 100], 3, 5)
+        stand_text = font.render('STAND', True, 'black')
+        screen.blit(stand_text, (355, 735))
+        button_list.append(stand)
 
 
 #main game loop
