@@ -21,12 +21,16 @@ timer = pygame.time.Clock()
 pygame.font.init()
 font = pygame.font.Font(None, 44)
 smaller_font = pygame.font.Font(None, 36)
-active = True
+active = False
 
 #win, loss, draw/push
 records = [0, 0, 0]
 player_score = 0
 dealer_score = 0
+initial_deal = False
+my_hand = []
+dealer_hand = []
+outcome = 0
 
 #draw game conditions and buttons
 def draw_game(act, record):
@@ -54,7 +58,7 @@ def draw_game(act, record):
         button_list.append(stand)
         score_text = font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
         screen.blit(score_text, (15, 840))
-        return button_list
+    return button_list
 
 
 #main game loop
@@ -69,6 +73,17 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if event.type == pygame.MOUSEBUTTONUP:
+            if not active:
+                if buttons[0].collidepoint(event.pos):
+                    active = True
+                    initial_deal = True
+                    game_deck = copy.deepcopy(decks * one_deck)
+                    my_hand = []
+                    dealer_hand = []
+                    outcome = 0
+
+
 
     pygame.display.flip()
 pygame.quit()
