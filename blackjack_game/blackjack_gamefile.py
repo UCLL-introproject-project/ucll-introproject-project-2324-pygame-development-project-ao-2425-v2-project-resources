@@ -24,3 +24,11 @@ while run:
     # run game at our framerate and fill screen with bg color
     timer.tick(fps)
     screen.fill('black')
+
+    #event handling, if quit pressed, then exit game
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+    pygame.display.flip()
+pygame.quit()
