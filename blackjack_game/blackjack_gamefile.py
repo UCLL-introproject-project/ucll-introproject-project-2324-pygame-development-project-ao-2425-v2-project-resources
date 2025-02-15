@@ -45,9 +45,20 @@ def deal_cards(current_hand, current_deck):
 def draw_cards(player, dealer, reveal):
     for i in range(len(player)):
         pygame.draw.rect(screen, 'white', [70 + (70 * i), 460 + (5 * i), 120, 220], 0, 5)
-        screen.blit(font.render(player[i], True, 'black'),(75 + 70*i, 465 + 5*i))
-        screen.blit(font.render(player[i], True, 'black'),(75 + 70*i, 635 + 5*i))
+        screen.blit(font.render(player[i], True, 'black'), (75 + 70 * i, 465 + 5 * i))
+        screen.blit(font.render(player[i], True, 'black'), (75 + 70 * i, 635 + 5 * i))
         pygame.draw.rect(screen, 'red', [70 + (70 * i), 460 + (5 * i), 120, 220], 5, 5)
+
+    # if player hasn't finished turn, dealer will hide one card
+    for i in range(len(dealer)):
+        pygame.draw.rect(screen, 'white', [70 + (70 * i), 160 + (5 * i), 120, 220], 0, 5)
+        if i != 0 or reveal:
+            screen.blit(font.render(dealer[i], True, 'black'), (75 + 70 * i, 165 + 5 * i))
+            screen.blit(font.render(dealer[i], True, 'black'), (75 + 70 * i, 335 + 5 * i))
+        else:
+            screen.blit(font.render('???', True, 'black'), (75 + 70 * i, 165 + 5 * i))
+            screen.blit(font.render('???', True, 'black'), (75 + 70 * i, 335 + 5 * i))
+        pygame.draw.rect(screen, 'blue', [70 + (70 * i), 160 + (5 * i), 120, 220], 5, 5)
 
 #draw game conditions and buttons
 def draw_game(act, record):
