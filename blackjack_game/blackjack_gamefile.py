@@ -31,6 +31,7 @@ initial_deal = False
 my_hand = []
 dealer_hand = []
 outcome = 0
+reveal_dealer = False
 
 #deal cards by selecting randomly from deck, and make function for one card at a time
 def deal_cards(current_hand, current_deck):
@@ -39,6 +40,14 @@ def deal_cards(current_hand, current_deck):
     current_deck.pop(card-1)
     print(current_hand, current_deck)
     return current_hand, current_deck
+
+#draw cards visually onto screen 
+def draw_cards(player, dealer, reveal):
+    for i in range(len(player)):
+        pygame.draw.rect(screen, 'white', [70 + (70 * i), 460 + (5 * i), 120, 220], 0, 5)
+        screen.blit(font.render(player[i], True, 'black'),(75 + 70*i, 465 + 5*i))
+        screen.blit(font.render(player[i], True, 'black'),(75 + 70*i, 635 + 5*i))
+        pygame.draw.rect(screen, 'red', [70 + (70 * i), 460 + (5 * i), 120, 220], 5, 5)
 
 #draw game conditions and buttons
 def draw_game(act, record):
@@ -83,6 +92,8 @@ while run:
         print(my_hand, dealer_hand)
         initial_deal = False
     #once game is activated, and dealt, calculate scores and display cards
+    if active:
+        draw_cards(my_hand, dealer_hand, reveal_dealer)
     buttons = draw_game(active, records)
 
     #event handling, if quit pressed, then exit game
