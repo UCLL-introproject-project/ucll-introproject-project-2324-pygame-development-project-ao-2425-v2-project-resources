@@ -60,6 +60,30 @@ def draw_cards(player, dealer, reveal):
             screen.blit(font.render('???', True, 'black'), (75 + 70 * i, 335 + 5 * i))
         pygame.draw.rect(screen, 'blue', [70 + (70 * i), 160 + (5 * i), 120, 220], 5, 5)
 
+#pass in player or dealer hand and get best score possible
+def calculate_score(hand):
+    #calculate hand score fresh every time, check how many aces we have
+    hand_score = 0
+    aces_count = hand.count('A')
+    for i in range(len(hand)):
+        # for 2,3,4,5,6,7,8,9 - just add the number to total
+        for j in range(8):
+            if hand[i] == cards[j]:
+                hand_score += int(hand[i])
+        # for 10 and face cards, add 10
+        if hand[i] in ['10','J','Q','K']:
+            hand_score += 10
+        # for aces start by adding 11, will check if we need to reduce afterwards
+        elif hand[i] == 'A':
+            hands_score += 11
+        # determine how many aces need to be 1 instead of 11 to get under 21 if possible
+        if hand_score > 21 and aces_count > 0:
+            for i in range(aces_count):
+                if hand_score > 21:
+                    hand_score -= 10
+        return hand_score
+
+    
 #draw game conditions and buttons
 def draw_game(act, record):
     button_list = []
@@ -104,6 +128,7 @@ while run:
         initial_deal = False
     #once game is activated, and dealt, calculate scores and display cards
     if active:
+        player_score = calculate_score(my_hand)
         draw_cards(my_hand, dealer_hand, reveal_dealer)
     buttons = draw_game(active, records)
 
