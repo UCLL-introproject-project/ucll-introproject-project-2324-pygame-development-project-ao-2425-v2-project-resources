@@ -1,5 +1,4 @@
 # blackjack game in python with pygame
-import copy
 import random
 import pygame
 
@@ -34,8 +33,6 @@ def open_deck(path: str) -> tuple[list[Card], pygame.Surface]:
     back = full_image.subsurface(rect)
     random.shuffle(deck)
     return deck, back
-
-    
 
 #setting up pygame window
 WIDTH = 600
