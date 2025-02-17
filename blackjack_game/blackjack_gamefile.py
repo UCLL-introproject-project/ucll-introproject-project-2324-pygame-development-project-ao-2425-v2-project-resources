@@ -41,6 +41,13 @@ def deal_cards(current_hand, current_deck):
     print(current_hand, current_deck)
     return current_hand, current_deck
 
+#draw scores for player and dealer on screen
+def draw_scores(player, dealer):
+    screen.blit(font.render(f'Score [{player}]', True, 'white'), (350, 400))
+    if reveal_dealer:
+        screen.blit(font.render(f'Score [{dealer}]', True, 'white'), (350, 100))
+
+
 #draw cards visually onto screen 
 def draw_cards(player, dealer, reveal):
     for i in range(len(player)):
@@ -71,17 +78,17 @@ def calculate_score(hand):
             if hand[i] == cards[j]:
                 hand_score += int(hand[i])
         # for 10 and face cards, add 10
-        if hand[i] in ['10','J','Q','K']:
+        if hand[i] in ['10', 'J', 'Q', 'K']:
             hand_score += 10
-        # for aces start by adding 11, will check if we need to reduce afterwards
+        # for aces start by adding 11, we'll check if we need to reduce afterwards
         elif hand[i] == 'A':
-            hands_score += 11
-        # determine how many aces need to be 1 instead of 11 to get under 21 if possible
-        if hand_score > 21 and aces_count > 0:
-            for i in range(aces_count):
-                if hand_score > 21:
-                    hand_score -= 10
-        return hand_score
+            hand_score += 11
+    # determine how many aces need to be 1 instead of 11 to get under 21 if possible
+    if hand_score > 21 and aces_count > 0:
+        for i in range(aces_count):
+            if hand_score > 21:
+                hand_score -= 10
+    return hand_score
 
     
 #draw game conditions and buttons
@@ -130,6 +137,11 @@ while run:
     if active:
         player_score = calculate_score(my_hand)
         draw_cards(my_hand, dealer_hand, reveal_dealer)
+        if reveal_dealer:
+            dealer_score = calculate_score(dealer_hand)
+            if dealer_score < 17:
+                dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
+        draw_scores(player_score, dealer_score)
     buttons = draw_game(active, records)
 
     #event handling, if quit pressed, then exit game
