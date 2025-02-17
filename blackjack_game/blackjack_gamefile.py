@@ -32,13 +32,15 @@ my_hand = []
 dealer_hand = []
 outcome = 0
 reveal_dealer = False
+hand_active = False
+outcome = 0
+add_score = False
 
 #deal cards by selecting randomly from deck, and make function for one card at a time
 def deal_cards(current_hand, current_deck):
     card = random.randint(0, len(current_deck))
     current_hand.append(current_deck[card-1])
     current_deck.pop(card-1)
-    print(current_hand, current_deck)
     return current_hand, current_deck
 
 #draw scores for player and dealer on screen
@@ -131,7 +133,6 @@ while run:
         for i in range(2):
             my_hand, game_deck = deal_cards(my_hand, game_deck)
             dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
-        print(my_hand, dealer_hand)
         initial_deal = False
     #once game is activated, and dealt, calculate scores and display cards
     if active:
@@ -157,6 +158,23 @@ while run:
                     my_hand = []
                     dealer_hand = []
                     outcome = 0
+                    hand_active = True
+                    outcome = 0
+            else:
+                # if player can hit, allow them to draw a card
+                if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                    my_hand, game_deck = deal_cards(my_hand, game_deck)
+                # allow player to end turn (stand)
+                elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
+                    reveal_dealer = True
+                    hand_active = False
+    #if player busts, automatically end turn - treat like a stand
+    if hand_active and player_score >= 21:
+        hand_active = False
+        reveal_dealer = True
+    
+    outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score, outcome, records, add_score)
+    
 
 
 
