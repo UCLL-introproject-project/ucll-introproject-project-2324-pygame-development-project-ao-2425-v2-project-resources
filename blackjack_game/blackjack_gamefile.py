@@ -5,7 +5,8 @@ import pygame
 
 pygame.init()
 #game variables
-cards = ['2','3','4','5','6','7','8','9','10','J','Q','K','A',]
+cards = ['2','3','4','5','6','7','8','9','10','J','Q','K','A']
+
 one_deck = 4 * cards
 decks = 4
 game_deck = copy.deepcopy(decks * one_deck)
@@ -18,7 +19,6 @@ screen = pygame.display.set_mode([WIDTH,HEIGHT])
 pygame.display.set_caption('Pygame Blackjack!')
 fps = 60
 timer = pygame.time.Clock()
-pygame.font.init()
 font = pygame.font.Font(None, 44)
 smaller_font = pygame.font.Font(None, 36)
 active = False
@@ -46,9 +46,9 @@ def deal_cards(current_hand, current_deck):
 
 #draw scores for player and dealer on screen
 def draw_scores(player, dealer):
-    screen.blit(font.render(f'Score [{player}]', True, 'white'), (350, 400))
+    screen.blit(font.render(f'Score: {player}', True, 'white'), (350, 400))
     if reveal_dealer:
-        screen.blit(font.render(f'Score [{dealer}]', True, 'white'), (350, 100))
+        screen.blit(font.render(f'Score: {dealer}', True, 'white'), (350, 100))
 
 
 #draw cards visually onto screen 
@@ -69,6 +69,7 @@ def draw_cards(player, dealer, reveal):
             screen.blit(font.render('???', True, 'black'), (75 + 70 * i, 165 + 5 * i))
             screen.blit(font.render('???', True, 'black'), (75 + 70 * i, 335 + 5 * i))
         pygame.draw.rect(screen, 'blue', [70 + (70 * i), 160 + (5 * i), 120, 220], 5, 5)
+
 
 #pass in player or dealer hand and get best score possible
 def calculate_score(hand):
