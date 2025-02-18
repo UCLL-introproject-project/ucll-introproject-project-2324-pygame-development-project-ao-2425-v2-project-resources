@@ -115,7 +115,7 @@ def draw_game(act, record, result):
         button_list.append(deal)
 
     #once game started, show hit and stand buttons and win/loss records
-    else:
+    elif result == 0:  #show buttons only when the game is running
         hit = pygame.draw.rect(screen, 'white', [0, 700, 300, 100], 0, 5)
         pygame.draw.rect(screen, 'green', [0, 700, 300, 100], 3, 5)
         hit_text = font.render('HIT ME', True, 'black')
@@ -127,9 +127,12 @@ def draw_game(act, record, result):
         stand_text = font.render('STAND', True, 'black')
         screen.blit(stand_text, (355, 735))
         button_list.append(stand)
-        score_text = font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
-        screen.blit(score_text, (15, 840))
-    #if there is an outcome for the hand that was played, display a restart button and tell user what happend
+
+    #show win/loss records always
+    score_text = font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
+    screen.blit(score_text, (15, 840))
+
+    #if the game is over, show "NEW HAND" button
     if result != 0:
         screen.blit(font.render(results[result], True, 'white'), (15, 25))
         deal = pygame.draw.rect(screen, 'white', [150, 220, 300, 100], 0, 5)
@@ -138,7 +141,9 @@ def draw_game(act, record, result):
         deal_text = font.render('NEW HAND', True, 'black')
         screen.blit(deal_text, (165, 250))
         button_list.append(deal)
+
     return button_list
+
 
 #check endgame conditions function
 def check_endgame(hand_active, deal_score, player_score, result, totals, add_score):
