@@ -1,8 +1,15 @@
 # blackjack game in python with pygame
+import os
 import random
 import pygame
 
-cards_path = "../images/cards.webp"
+# Get the directory where the script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Construct the path to the cards.webp file relative to the script's directory
+cards_path = os.path.join(script_dir, '../images/cards.webp')
+
+# For debugging purposes
+print(cards_path)
 
 pygame.init()
 #game variables
