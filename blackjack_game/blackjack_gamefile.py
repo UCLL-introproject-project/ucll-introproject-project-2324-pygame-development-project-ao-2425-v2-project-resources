@@ -83,7 +83,6 @@ def draw_scores(player, dealer):
     if reveal_dealer:
         screen.blit(font.render(f'Score: {dealer}', True, 'white'), (350, 100))
 
-
 #draw cards visually onto screen 
 def draw_cards(player_hand, dealer_hand, reveal):
     for i in range(len(player_hand)):
@@ -153,7 +152,6 @@ def draw_game(act, record, result):
 
     return button_list
 
-
 #check endgame conditions function
 def check_endgame(hand_active, deal_score, player_score, result, totals, add_score):
     # check end game scenaris if player has stood, busted or blackjacked
@@ -178,7 +176,6 @@ def check_endgame(hand_active, deal_score, player_score, result, totals, add_sco
     return result, totals, add_score
 
 #main game loop
-new_hand = False
 run = True
 while run:
     # run game at our framerate and fill screen with bg color
@@ -198,7 +195,7 @@ while run:
             dealer_score = calculate_score(dealer_hand)
             if dealer_score < 17:
                 dealer_hand, game_deck = deal_cards(dealer_hand, game_deck)
-        draw_scores(player_score, dealer_score)
+        draw_scores(player_score, dealer_score) 
     buttons = draw_game(active, records, outcome)
 
     #event handling, if quit pressed, then exit game
@@ -206,37 +203,42 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONUP:
-            if not active:
-                if buttons[0].collidepoint(event.pos):
-                    active = True
-                    initial_deal = True
-                    game_deck, back = open_deck(cards_path)
-                    my_hand = []
-                    dealer_hand = []
-                    outcome = 0
-                    hand_active = True
-                    outcome = 0
-                    add_score = True
-            else:
-                # if player can hit
-                if len(buttons) > 0 and buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+
+            if len(buttons) > 0 and buttons[0].collidepoint(event.pos) and outcome != 0:
+                active = True
+                initial_deal = True
+                reveal_dealer = False
+                game_deck, back = open_deck(cards_path)
+                my_hand = []
+                dealer_hand = []
+                outcome = 0
+                hand_active = True
+                add_score = True
+                dealer_score = 0
+                player_score = 0
+
+            # If game is not active, check DEAL HAND button (usually first button)
+            elif not active and len(buttons) > 0 and buttons[0].collidepoint(event.pos):
+                active = True
+                initial_deal = True
+                game_deck, back = open_deck(cards_path)
+                my_hand = []
+                dealer_hand = []
+                outcome = 0
+                hand_active = True
+                outcome = 0
+                add_score = True
+
+            # During game: HIT or STAND
+            elif active and len(buttons) >= 2:
+                # HIT button (usually first during game)
+                if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
                     my_hand, game_deck = deal_cards(my_hand, game_deck)
-                # if player stands
-                elif len(buttons) > 1 and buttons[1].collidepoint(event.pos) and not reveal_dealer:
+
+                # STAND button (usually second during game)
+                elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
                     reveal_dealer = True
                     hand_active = False
-                # if player clicks "NEW HAND"
-                elif len(buttons) > 2 and buttons[2].collidepoint(event.pos):
-                    active = True
-                    initial_deal = True
-                    game_deck, back = open_deck(cards_path)
-                    my_hand = []
-                    dealer_hand = []
-                    outcome = 0
-                    hand_active = True
-                    add_score = True
-                    dealer_score = 0
-                    player_score = 0
 
     #if player busts, automatically end turn - treat like a stand
     if hand_active and player_score >= 21:
