@@ -2,6 +2,8 @@
 import random
 import pygame
 
+cards_path = "../images/cards.webp"
+
 pygame.init()
 #game variables
 
@@ -45,7 +47,7 @@ font = pygame.font.Font(None, 44)
 smaller_font = pygame.font.Font(None, 36)
 active = False
 
-game_deck, back = open_deck("images/cards.webp")
+game_deck, back = open_deck(cards_path)
 
 #win, loss, draw/push
 records = [0, 0, 0]
@@ -168,8 +170,8 @@ def check_endgame(hand_active, deal_score, player_score, result, totals, add_sco
             add_score = False
     return result, totals, add_score
 
-
 #main game loop
+new_hand = False
 run = True
 while run:
     # run game at our framerate and fill screen with bg color
@@ -201,7 +203,7 @@ while run:
                 if buttons[0].collidepoint(event.pos):
                     active = True
                     initial_deal = True
-                    game_deck, back = open_deck("images/cards.webp")
+                    game_deck, back = open_deck(cards_path)
                     my_hand = []
                     dealer_hand = []
                     outcome = 0
@@ -209,26 +211,25 @@ while run:
                     outcome = 0
                     add_score = True
             else:
-                # if player can hit, allow them to draw a card
-                if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                # if player can hit
+                if len(buttons) > 0 and buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
                     my_hand, game_deck = deal_cards(my_hand, game_deck)
-                # allow player to end turn (stand)
-                elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
+                # if player stands
+                elif len(buttons) > 1 and buttons[1].collidepoint(event.pos) and not reveal_dealer:
                     reveal_dealer = True
                     hand_active = False
-                elif len(buttons) == 3:
-                    if buttons[2].collidepoint(event.pos):
-                       active = True
-                       initial_deal = True
-                       game_deck, back = open_deck("images/cards.webp")
-                       my_hand = []
-                       dealer_hand = []
-                       outcome = 0
-                       hand_active = True
-                       outcome = 0
-                       add_score = True
-                       dealer_score = 0
-                       player_score = 0
+                # if player clicks "NEW HAND"
+                elif len(buttons) > 2 and buttons[2].collidepoint(event.pos):
+                    active = True
+                    initial_deal = True
+                    game_deck, back = open_deck(cards_path)
+                    my_hand = []
+                    dealer_hand = []
+                    outcome = 0
+                    hand_active = True
+                    add_score = True
+                    dealer_score = 0
+                    player_score = 0
 
     #if player busts, automatically end turn - treat like a stand
     if hand_active and player_score >= 21:
