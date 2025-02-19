@@ -153,17 +153,7 @@ def draw_game(act, record, result):
         draw_button('STAND', stand_rect, font, 'black', 'white', 'green')
         button_list.append(stand_rect)
 
-<<<<<<< HEAD
-    #show points (money)
-    points_text = font.render(f'Points', True, 'white')
-    points_number = font.render(str(points), True, 'white')
-    screen.blit(points_text, (475, 10))
-    screen.blit(points_number, (497, 50))
-
-    #show win/loss records always
-=======
     # Show win/loss records
->>>>>>> main
     score_text = font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
     screen.blit(score_text, (15, 840))
 
