@@ -56,6 +56,16 @@ active = False
 
 game_deck, back = open_deck(cards_path)
 
+# points/user bet input
+bet_input_box = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 60)
+bet_input = 0
+points = 100
+bet = 0
+position_bet_middle = True
+show_bet_input = True
+show_bet_amount = False
+
+
 #win, loss, draw/push
 records = [0, 0, 0]
 player_score = 0
@@ -136,6 +146,12 @@ def draw_game(act, record, result):
         screen.blit(stand_text, (355, 735))
         button_list.append(stand)
 
+    #show points (money)
+    points_text = font.render(f'Points', True, 'white')
+    points_number = font.render(str(points), True, 'white')
+    screen.blit(points_text, (475, 10))
+    screen.blit(points_number, (497, 50))
+
     #show win/loss records always
     score_text = font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
     screen.blit(score_text, (15, 840))
@@ -153,18 +169,36 @@ def draw_game(act, record, result):
     return button_list
 
 #check endgame conditions function
-def check_endgame(hand_active, deal_score, player_score, result, totals, add_score):
+def check_endgame(hand_active, deal_score, player_score, result, totals, add_score, points, bet, show_bet_amount, show_bet_input, bet_input):
     # check end game scenaris if player has stood, busted or blackjacked
     # result 1- player bust, 2-win, 3-loss, 4-push
     if not hand_active and deal_score >= 17:
         if player_score > 21:
             result = 1
+            if not show_bet_input:
+                bet = 0
+                show_bet_amount = False
+                show_bet_input = True
         elif deal_score < player_score <= 21 or deal_score > 21:
             result = 2
+            if not show_bet_input:
+                points = points + bet + bet
+                bet = 0
+                show_bet_amount = False
+                show_bet_input = True
         elif player_score < deal_score <= 21:
             result = 3
+            if not show_bet_input:
+                bet = 0
+                show_bet_amount = False
+                show_bet_input = True
         else:
             result = 4
+            if not show_bet_input:
+                points = points + bet
+                bet = 0
+                show_bet_amount = False
+                show_bet_input = True
         if add_score:
             if result == 1 or result == 3:
                 totals[1] += 1
@@ -173,7 +207,7 @@ def check_endgame(hand_active, deal_score, player_score, result, totals, add_sco
             else:
                 totals[2] += 1
             add_score = False
-    return result, totals, add_score
+    return result, totals, add_score, points, bet, show_bet_amount, show_bet_input, bet_input
 
 #main game loop
 run = True
@@ -202,9 +236,29 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.MOUSEBUTTONUP:
+
+        # Input bet
+        elif event.type == pygame.KEYDOWN:
+                
+            if event.key == pygame.K_BACKSPACE:
+                try:
+                    bet_input = int(str(bet_input)[:-1])  # Remove last character
+                except ValueError:
+                    bet_input = 0
+
+            elif event.unicode.isdigit():  # Accept only numbers
+                bet_input = int(str(bet_input) + str(event.unicode))
+
+            bet = int(bet_input)
+
+        elif event.type == pygame.MOUSEBUTTONUP:
 
             if len(buttons) > 0 and buttons[0].collidepoint(event.pos) and outcome != 0:
+                show_bet_input = False
+                points = points - bet_input
+                bet = bet_input
+                bet_input = 0
+                show_bet_amount = True
                 active = True
                 initial_deal = True
                 reveal_dealer = False
@@ -219,6 +273,10 @@ while run:
 
             # If game is not active, check DEAL HAND button (usually first button)
             elif not active and len(buttons) > 0 and buttons[0].collidepoint(event.pos):
+                position_bet_middle = False
+                points = points - bet
+                show_bet_input = False
+                show_bet_amount = True
                 active = True
                 initial_deal = True
                 game_deck, back = open_deck(cards_path)
@@ -240,15 +298,33 @@ while run:
                     reveal_dealer = True
                     hand_active = False
 
+    if show_bet_input:
+        if not position_bet_middle:
+            bet_input_box = pygame.Rect(WIDTH // 2 - 100, 1450 // 2 - 30, 200, 60)
+        # Render the bet prompt
+        bet_prompt = font.render('How much to bet?', True, 'white')
+        screen.blit(bet_prompt, (bet_input_box.x, bet_input_box.y - 40))
+
+        # Draw the input box
+        pygame.draw.rect(screen, (255, 255, 255), bet_input_box, border_radius=10)
+
+        # Render the user input inside the box
+        text_surface = font.render(str(bet_input), True, (0, 0, 0))
+        screen.blit(text_surface, (bet_input_box.x + 10, bet_input_box.y + 15))
+
+    if show_bet_amount == True:
+        #show betted amount
+        bet_text = font.render(f'Bet', True, 'white')
+        bet_amount = font.render(str(bet), True, 'white')
+        screen.blit(bet_text, (385, 10))
+        screen.blit(bet_amount, (385, 50))
+
     #if player busts, automatically end turn - treat like a stand
     if hand_active and player_score >= 21:
         hand_active = False
         reveal_dealer = True
     
-    outcome, records, add_score = check_endgame(hand_active, dealer_score, player_score, outcome, records, add_score)
+    outcome, records, add_score, points, bet, show_bet_amount, show_bet_input, bet_input = check_endgame(hand_active, dealer_score, player_score, outcome, records, add_score, points, bet, show_bet_amount, show_bet_input, bet_input)
     
-
-
-
     pygame.display.flip()
 pygame.quit()
