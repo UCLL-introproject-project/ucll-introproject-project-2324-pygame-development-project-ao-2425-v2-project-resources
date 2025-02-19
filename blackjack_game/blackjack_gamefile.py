@@ -53,6 +53,8 @@ timer = pygame.time.Clock()
 font = pygame.font.Font(None, 44)
 smaller_font = pygame.font.Font(None, 36)
 active = False
+background = pygame.image.load("images/blackjack_background.jpg")
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
 game_deck, back = open_deck(cards_path)
 
@@ -214,7 +216,7 @@ run = True
 while run:
     # run game at our framerate and fill screen with bg color
     timer.tick(fps)
-    screen.fill('black')
+    screen.blit(background, (0, 0))
     #initial deal to player and dealer
     if initial_deal:
         for i in range(2):
