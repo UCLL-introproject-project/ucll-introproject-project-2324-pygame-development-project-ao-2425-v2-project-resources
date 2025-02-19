@@ -115,44 +115,44 @@ def calculate_score(hand: list[Card]):
                 hand_score -= 10
     return hand_score
     
-#draw game conditions and buttons
+# Function to center text inside a button
+def draw_button(text, rect, font, text_color, button_color, border_color):
+    """Draws a button with centered text."""
+    pygame.draw.rect(screen, button_color, rect, 0, 5)  # Fill button
+    pygame.draw.rect(screen, border_color, rect, 3, 5)  # Border
+
+    text_surf = font.render(text, True, text_color)
+    text_rect = text_surf.get_rect(center=rect.center)  # Center the text in the button
+    screen.blit(text_surf, text_rect)
+
+
+# Modify draw_game() to use draw_button
 def draw_game(act, record, result):
     button_list = []
-    #initially on startup (not active) only option is to deal new hand
+
     if not act:
-        deal = pygame.draw.rect(screen, 'white', [150, 20, 300, 100], 0, 5)
-        pygame.draw.rect(screen, 'green', [150, 20, 300, 100], 3, 5)
-        deal_text = font.render('DEAL HAND', True, 'black')
-        screen.blit(deal_text, (165, 50))
-        button_list.append(deal)
+        deal_rect = pygame.Rect(150, 20, 300, 100)
+        draw_button('DEAL HAND', deal_rect, font, 'black', 'white', 'green')
+        button_list.append(deal_rect)
 
-    #once game started, show hit and stand buttons and win/loss records
-    elif result == 0:  #show buttons only when the game is running
-        hit = pygame.draw.rect(screen, 'white', [0, 700, 300, 100], 0, 5)
-        pygame.draw.rect(screen, 'green', [0, 700, 300, 100], 3, 5)
-        hit_text = font.render('HIT ME', True, 'black')
-        screen.blit(hit_text, (55, 735))
-        button_list.append(hit)
+    elif result == 0:  # Game is running, show "HIT" and "STAND"
+        hit_rect = pygame.Rect(0, 700, 300, 100)
+        draw_button('HIT ME', hit_rect, font, 'black', 'white', 'green')
+        button_list.append(hit_rect)
 
-        stand = pygame.draw.rect(screen, 'white', [300, 700, 300, 100], 0, 5)
-        pygame.draw.rect(screen, 'green', [300, 700, 300, 100], 3, 5)
-        stand_text = font.render('STAND', True, 'black')
-        screen.blit(stand_text, (355, 735))
-        button_list.append(stand)
+        stand_rect = pygame.Rect(300, 700, 300, 100)
+        draw_button('STAND', stand_rect, font, 'black', 'white', 'green')
+        button_list.append(stand_rect)
 
-    #show win/loss records always
+    # Show win/loss records
     score_text = font.render(f'Wins: {record[0]}   Losses: {record[1]}   Draws: {record[2]}', True, 'white')
     screen.blit(score_text, (15, 840))
 
-    #if the game is over, show "NEW HAND" button
-    if result != 0:
+    if result != 0:  # Game over, show "NEW HAND" button
         screen.blit(font.render(results[result], True, 'white'), (15, 25))
-        deal = pygame.draw.rect(screen, 'white', [150, 220, 300, 100], 0, 5)
-        pygame.draw.rect(screen, 'green', [150, 220, 300, 100], 3, 5)
-        pygame.draw.rect(screen, 'black', [153, 223, 294, 94], 3, 5)
-        deal_text = font.render('NEW HAND', True, 'black')
-        screen.blit(deal_text, (165, 250))
-        button_list.append(deal)
+        new_hand_rect = pygame.Rect(150, 220, 300, 100)
+        draw_button('NEW HAND', new_hand_rect, font, 'black', 'white', 'green')
+        button_list.append(new_hand_rect)
 
     return button_list
 
