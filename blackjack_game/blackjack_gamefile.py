@@ -7,6 +7,7 @@ import pygame
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Construct the path to the cards.webp file relative to the script's directory
 cards_path = os.path.join(script_dir, '../images/cards.webp')
+background_path = os.path.join(script_dir, '../images/blackjack_background.jpg')
 
 # For debugging purposes
 print(cards_path)
@@ -53,7 +54,7 @@ timer = pygame.time.Clock()
 font = pygame.font.Font(None, 44)
 smaller_font = pygame.font.Font(None, 36)
 active = False
-background = pygame.image.load("images/blackjack_background.jpg")
+background = pygame.image.load(background_path)
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
 game_deck, back = open_deck(cards_path)
