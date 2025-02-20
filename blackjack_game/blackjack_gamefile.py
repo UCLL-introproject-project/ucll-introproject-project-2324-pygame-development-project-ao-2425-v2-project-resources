@@ -8,11 +8,17 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 # Construct the path to the cards.webp file relative to the script's directory
 cards_path = os.path.join(script_dir, '../images/cards.webp')
 background_path = os.path.join(script_dir, '../images/blackjack_background.jpg')
+sounds_path = os.path.join(script_dir, '../sounds')
 
 # For debugging purposes
 print(cards_path)
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load(os.path.join(sounds_path, "background_music.wav"))
+pygame.mixer.music.play(-1)  #play in a loop
+pygame.mixer.music.set_volume(0.3)
+
 #game variables
 
 class Card:
@@ -59,6 +65,15 @@ background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
 game_deck, back = open_deck(cards_path)
 
+#sound variables
+deal_sound = pygame.mixer.Sound(os.path.join(sounds_path, "deal.wav"))
+hit_sound = pygame.mixer.Sound(os.path.join(sounds_path, "hit.wav"))
+stand_sound = pygame.mixer.Sound(os.path.join(sounds_path, "stand.wav"))
+win_sound = pygame.mixer.Sound(os.path.join(sounds_path, "win.wav"))
+lose_sound = pygame.mixer.Sound(os.path.join(sounds_path, "lose.wav"))
+tie_sound = pygame.mixer.Sound(os.path.join(sounds_path, "tie.wav"))
+sound_played = False
+
 # points/user bet input
 bet_input_box = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 60)
 bet_input = 0
@@ -81,6 +96,7 @@ reveal_dealer = False
 hand_active = False
 outcome = 0
 add_score = False
+sound_played = False
 results = ['', 'PLAYER BUSTED o_O', 'PLAYER WINS! :)', 'DEALER WINS :(', 'TIE GAME...']
 
 #deal cards by selecting randomly from deck, and make function for one card at a time
@@ -215,6 +231,20 @@ def check_endgame(hand_active, deal_score, player_score, result, totals, add_sco
             add_score = False
     return result, totals, add_score, points, bet, show_bet_amount, show_bet_input, bet_input
 
+# Check endgame and play sounds once
+def check_endgame_conditions():
+    global sound_played, outcome
+    if outcome != 0 and not sound_played:
+        if outcome == 1:
+            lose_sound.play()
+        elif outcome == 2:
+            win_sound.play()
+        elif outcome == 3:
+            lose_sound.play()
+        elif outcome == 4:
+            tie_sound.play()
+        sound_played = True
+
 #main game loop
 run = True
 while run:
@@ -259,7 +289,7 @@ while run:
 
         elif event.type == pygame.MOUSEBUTTONUP:
 
-            if len(buttons) > 0 and buttons[0].collidepoint(event.pos) and outcome != 0:
+            if len(buttons) > 0 and buttons[0].collidepoint(event.pos) and outcome != 0: 
                 show_bet_input = False
                 points = points - bet_input
                 bet = bet_input
@@ -279,6 +309,8 @@ while run:
 
             # If game is not active, check DEAL HAND button (usually first button)
             elif not active and len(buttons) > 0 and buttons[0].collidepoint(event.pos):
+                deal_sound.play()  
+                pygame.time.delay(100)
                 position_bet_middle = False
                 points = points - bet
                 show_bet_input = False
@@ -297,10 +329,12 @@ while run:
             elif active and len(buttons) >= 2:
                 # HIT button (usually first during game)
                 if buttons[0].collidepoint(event.pos) and player_score < 21 and hand_active:
+                    hit_sound.play()
                     my_hand, game_deck = deal_cards(my_hand, game_deck)
 
                 # STAND button (usually second during game)
                 elif buttons[1].collidepoint(event.pos) and not reveal_dealer:
+                    stand_sound.play()
                     reveal_dealer = True
                     hand_active = False
 
@@ -332,5 +366,10 @@ while run:
     
     outcome, records, add_score, points, bet, show_bet_amount, show_bet_input, bet_input = check_endgame(hand_active, dealer_score, player_score, outcome, records, add_score, points, bet, show_bet_amount, show_bet_input, bet_input)
     
+    check_endgame_conditions()
+    # Ensure sound flag resets when new round starts
+    if active and outcome == 0:
+        sound_played = False
+
     pygame.display.flip()
 pygame.quit()
